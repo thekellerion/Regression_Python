@@ -54,81 +54,64 @@ def System(X_i):
 # -----------------------------------------------------------
 #                   Regression
 # -----------------------------------------------------------
+def print_RegressionResult(X, y):
+    """
+    X: Input
+    y: response
+
+    1) split in Train and Test
+    2) run LinearRegression
+    3) run prediction
+    4) print Mean Sqared error and r2-score
+    5) plot X[1] and y;   plot beta
+    """
+    # --- split in train and test
+    X_train, X_test, y_train, y_test = train_test_split(\
+                        X, y, test_size=0.25, random_state=42)
+
+    # --- normalize
+    #X_norm =  StandardScaler(X)
+
+    # --- linear regression
+    regr = LinearRegression()
+    regr.fit(X_train,y_train)
+
+    beta_ = regr.coef_
+    y_ = regr.predict(X_test)
+
+    # The mean squared error
+    print("Mean squared error: %.2f"
+          % mean_squared_error(y_test, y_))
+    # Explained variance score: 1 is perfect prediction
+    print('Variance score: %.2f\n\n' % r2_score(y_test, y_))
+
+    plt.scatter(X_test[:,1], y_test)
+    plt.scatter(X_test[:,1],y_)
+    plt.legend([r'$y_{test}$', r'$\hat{y}$'])
+    plt.show()
+
+    plt.bar(range(len(beta_)), beta_)
+    plt.xlabel(['beta'])
+    plt.show()
 
 
 # --- run simulation
 X = test_process(X_limit,100)
 y = System(X)
 
-# --- split in train and test
-X_train, X_test, y_train, y_test = train_test_split(\
-                    X, y, test_size=0.25, random_state=42)
-
-# --- normalize
-#X_norm =  StandardScaler(X)
-
-# --- linear regression
-regr = LinearRegression()
-regr.fit(X_train,y_train)
-
-beta_ = regr.coef_
-y_ = regr.predict(X_test)
-
-
-
-# The coefficients
-print('Coefficients: \n', regr.coef_)
-# The mean squared error
-print("Mean squared error: %.2f"
-      % mean_squared_error(y_test, y_))
-# Explained variance score: 1 is perfect prediction
-print('Variance score: %.2f\n\n' % r2_score(y_test, y_))
-
-
-
-plt.scatter(X_test[:,1], y_test)
-plt.scatter(X_test[:,1],y_)
-plt.legend([r'$y_{test}$', r'$\hat{y}$'])
-plt.show()
+print_RegressionResult(X, y)
 
 
 # -----------------------------------------------------------
 #                   Regression
 # -----------------------------------------------------------
-print('Ergebnis nicht zufrieden stellend\n\n')
+print('-'*80)
+
+print('Ergebnis nicht zufrieden stellend.')
+print('Besser polynom ansatz wählen: 1,X2... X1**2, X2**2,... X1X2, ...')
 
 # --- transfrom X1, X2, ... zu X1,X2... X1**2, X2**2,... X1X2, ...
 X_train_poly = PolynomialFeatures(degree=2)
 X_train_poly = X_train_poly.fit_transform(X)
 
-
-# --- split in train and test
-X_train, X_test, y_train, y_test = train_test_split(\
-                    X_train_poly, y, test_size=0.25, random_state=42)
-
-# --- normalize
-#X_norm =  StandardScaler(X)
-
-# --- linear regression
-regr = LinearRegression()
-regr.fit(X_train,y_train)
-
-beta_ = regr.coef_
-y_ = regr.predict(X_test)
-
-
-
-# The coefficients
-print('Coefficients: \n', regr.coef_)
-# The mean squared error
-print("Mean squared error: %.2f"
-      % mean_squared_error(y_test, y_))
-# Explained variance score: 1 is perfect prediction
-print('Variance score: %.2f\n\n' % r2_score(y_test, y_))
-
-
-
-plt.scatter(X_test[:,1], y_test)
-plt.scatter(X_test[:,1],y_)
-plt.legend([r'$y_{test}$', r'$\hat{y}$'])
-plt.show()
+print_RegressionResult(X_train_poly, y)
